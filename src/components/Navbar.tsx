@@ -1,14 +1,27 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
+import Link from 'next/link';
 import { Menu, X, BrainCircuit } from 'lucide-react';
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
+    const { scrollY } = useScroll();
+
+    useMotionValueEvent(scrollY, "change", (latest) => {
+        setIsScrolled(latest > 50);
+    });
 
     return (
-        <nav className="navbar glass">
+        <motion.nav
+            className={`navbar fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'glass py-3' : 'bg-transparent py-6'
+                }`}
+            initial={{ y: -100 }}
+            animate={{ y: 0 }}
+            transition={{ duration: 0.5 }}
+        >
             <div className="flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-3 cursor-pointer">
@@ -97,6 +110,6 @@ export function Navbar() {
                     </div>
                 </div>
             )}
-        </nav>
+        </motion.nav>
     );
 }

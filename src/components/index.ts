@@ -5,3 +5,4 @@ export * from './RegistrationForm';
 export * from './BlogCard';
 export * from './EventCard';
 export * from './HeroVisual';
+export * from './LandingPage';
