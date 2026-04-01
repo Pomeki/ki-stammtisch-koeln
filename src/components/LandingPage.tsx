@@ -1,8 +1,7 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import {
     Navbar,
     Footer,
@@ -18,12 +17,12 @@ import {
     Lightbulb,
     Target,
     Rocket,
-    ArrowRight,
     BrainCircuit,
     Building2,
     Sparkles,
     TrendingUp
 } from 'lucide-react';
+import { useRef } from 'react';
 
 interface LandingPageProps {
     settings: any;
@@ -33,131 +32,99 @@ interface LandingPageProps {
 }
 
 export function LandingPage({ settings, nextEvent, pastEvents, blogPosts }: LandingPageProps) {
+    const heroRef = useRef(null);
+    const { scrollYProgress } = useScroll();
+    const glowX = useTransform(scrollYProgress, [0, 1], ['0%', '60%']);
+    const glowOpacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.15, 0.25, 0.1, 0.05]);
+
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
-            transition: {
-                staggerChildren: 0.1,
-                delayChildren: 0.3,
-            },
+            transition: { staggerChildren: 0.08, delayChildren: 0.1 },
         },
     };
 
     const itemVariants = {
         hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
     };
 
     const features = [
-        {
-            icon: Users,
-            title: 'Networking',
-            description: 'Vernetzen Sie sich mit Gleichgesinnten aus verschiedenen Branchen und tauschen Sie Erfahrungen aus.',
-        },
-        {
-            icon: Lightbulb,
-            title: 'Wissensaustausch',
-            description: 'Lernen Sie von Praxisberichten und erfahren Sie, wie andere Unternehmen KI erfolgreich einsetzen.',
-        },
-        {
-            icon: Target,
-            title: 'Praxisnah',
-            description: 'Keine theoretischen Vorträge – bei uns geht es um echte Anwendungsfälle und praktische Tipps.',
-        },
-        {
-            icon: Rocket,
-            title: 'Impulse',
-            description: 'Holen Sie sich Inspiration und neue Ideen für die KI-Integration in Ihrem Unternehmen.',
-        },
+        { icon: Users, title: 'Networking', description: 'Vernetzen Sie sich mit Gleichgesinnten aus verschiedenen Branchen und tauschen Sie Erfahrungen aus.' },
+        { icon: Lightbulb, title: 'Wissen', description: 'Lernen Sie von Praxisberichten und erfolgreichen KI-Anwendungsfällen anderer Unternehmen.' },
+        { icon: Target, title: 'Praxisnah', description: 'Keine trockenen Vorträge – echte Anwendungsfälle und sofort umsetzbare Tipps.' },
+        { icon: Rocket, title: 'Impulse', description: 'Inspiration und neue Ideen für die KI-Integration in Ihrem Unternehmen.' },
     ];
 
     const targetGroups = [
-        {
-            icon: BrainCircuit,
-            title: 'Selbstständige',
-            description: 'Die ihre Arbeitsprozesse mit KI optimieren möchten',
-        },
-        {
-            icon: Building2,
-            title: 'Unternehmer',
-            description: 'Die nach Wettbewerbsvorteilen durch KI suchen',
-        },
-        {
-            icon: TrendingUp,
-            title: 'Firmenvertreter',
-            description: 'Die KI-Strategien entwickeln und umsetzen wollen',
-        },
-        {
-            icon: Sparkles,
-            title: 'KI-Interessierte',
-            description: 'Die praktische Anwendungen kennenlernen möchten',
-        },
+        { icon: BrainCircuit, title: 'Selbstständige', description: 'Arbeitsprozesse mit KI optimieren.' },
+        { icon: Building2, title: 'Unternehmer', description: 'Wettbewerbsvorteile durch KI finden.' },
+        { icon: TrendingUp, title: 'Firmenvertreter', description: 'KI-Strategien mutig umsetzen.' },
+        { icon: Sparkles, title: 'Interessierte', description: 'KI im Arbeitsalltag kennenlernen.' },
     ];
 
     return (
-        <>
+        <div className="relative">
             <Navbar />
 
+            {/* Scroll-reactive Ambient Glow */}
+            <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
+            <motion.div
+                className="fixed top-0 left-0 w-[600px] h-[600px] bg-[#E11D48] rounded-full blur-[200px] pointer-events-none z-0 mix-blend-screen"
+                style={{ left: glowX, opacity: glowOpacity }}
+            />
+            <motion.div
+                className="fixed bottom-0 right-0 w-[500px] h-[500px] bg-[#06b6d4] rounded-full blur-[180px] pointer-events-none z-0 mix-blend-screen opacity-[0.08]"
+            />
+
             {/* Offline Alert */}
-            {/* @ts-ignore */}
             {settings.isOffline && (
-                <div className="bg-amber-100 border-b border-amber-200 text-amber-800 px-4 py-2 text-center text-sm relative z-50 pt-[100px] -mb-[100px]">
-                    <span className="font-semibold">Hinweis:</span> Datenbank ist nicht erreichbar. Die Seite läuft im Demo-Modus.
+                <div className="bg-[#E11D48]/10 border-b border-[#E11D48]/30 text-[#E11D48] px-4 py-2 text-center text-sm relative z-50 pt-[100px] -mb-[100px] backdrop-blur-md font-syne">
+                    <span className="font-bold">Hinweis:</span> Datenbank nicht erreichbar – Demo-Modus aktiv.
                 </div>
             )}
 
-            {/* Hero Section */}
-            <section className="min-h-[90vh] flex items-center pt-32 pb-20 overflow-hidden relative">
-                {/* Background Elements */}
-                <div className="absolute inset-0 z-0">
-                    <motion.div
-                        animate={{ scale: [1, 1.1, 1], rotate: [0, 5, 0] }}
-                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                        className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[#7C3AED]/5 blur-[120px]"
-                    />
-                    <motion.div
-                        animate={{ scale: [1, 1.2, 1], rotate: [0, -5, 0] }}
-                        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-                        className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-[#E11D48]/5 blur-[120px]"
-                    />
-                    <div className="absolute top-[20%] right-[20%] w-[30%] h-[30%] rounded-full bg-[#22C55E]/5 blur-[100px]" />
-                    {/* Grid Pattern */}
-                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" />
-                </div>
-
-                <div className="container mx-auto px-6 relative z-10">
+            {/* ═══════════════════════════════════════════ */}
+            {/* HERO SECTION – compact, no dead space      */}
+            {/* ═══════════════════════════════════════════ */}
+            <section ref={heroRef} className="min-h-[85vh] flex items-center pt-24 pb-12 relative overflow-hidden">
+                <div className="container mx-auto px-6 relative z-10 max-w-7xl">
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
-                        {/* Left Column: Content */}
+                        {/* Left: Text */}
                         <motion.div
                             className="text-center lg:text-left"
                             variants={containerVariants}
                             initial="hidden"
                             animate="visible"
                         >
-                            {/* Badge */}
-                            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 badge badge-koeln mb-6">
-                                <span className="relative flex h-3 w-3">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-[#E11D48]"></span>
+                            {/* Live Badge */}
+                            <motion.div variants={itemVariants} className="inline-flex items-center gap-3 bg-black/40 backdrop-blur-md border border-[#E11D48]/30 rounded-full px-5 py-2 mb-6 text-[#E11D48] text-xs uppercase font-syne tracking-[0.2em] shadow-[0_0_20px_rgba(225,29,72,0.15)]">
+                                <span className="relative flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E11D48] opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E11D48]"></span>
                                 </span>
-                                <span>Köln • Monatlich Live</span>
+                                Köln · LIVE VOR ORT
                             </motion.div>
 
-                            {/* Title with Staggered Character Reveal */}
-                            <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-                                <span className="gradient-text">{settings.heroTitle}</span>
+                            {/* Title */}
+                            <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl font-bold mb-5 leading-[1.05] font-syne">
+                                {(settings.heroTitle || 'KI-Stammtisch Köln').split(' ').map((word: string, i: number) => (
+                                    <span key={i} className={word === 'Köln' ? 'text-[#E11D48] text-glow' : 'text-white'}>
+                                        {word}{' '}
+                                    </span>
+                                ))}
                             </motion.h1>
 
                             {/* Subtitle */}
-                            <motion.p variants={itemVariants} className="text-xl text-[#6B21A8] mb-8 max-w-2xl mx-auto lg:mx-0">
+                            <motion.p variants={itemVariants} className="text-lg text-zinc-400 mb-8 max-w-xl mx-auto lg:mx-0 font-light tracking-wide font-manrope leading-relaxed">
                                 {settings.heroSubtitle}
                             </motion.p>
 
-                            {/* Countdown */}
+                            {/* Countdown (if event exists) */}
                             {settings.showCountdown && nextEvent && (
-                                <motion.div variants={itemVariants} className="hidden lg:block mb-10">
-                                    <p className="text-[#6B21A8] mb-2 font-medium text-sm uppercase tracking-wide">Nächstes Treffen in:</p>
+                                <motion.div variants={itemVariants} className="mb-8">
+                                    <p className="text-zinc-500 mb-3 font-syne text-xs uppercase tracking-[0.15em]">Nächstes Treffen in:</p>
                                     <div className="flex justify-center lg:justify-start">
                                         <Countdown targetDate={new Date(nextEvent.date)} />
                                     </div>
@@ -165,144 +132,114 @@ export function LandingPage({ settings, nextEvent, pastEvents, blogPosts }: Land
                             )}
 
                             {/* CTA Buttons */}
-                            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                                <a href="#register" className="btn-cta group relative overflow-hidden">
-                                    <span className="relative z-10 flex items-center gap-2">
-                                        Jetzt anmelden
-                                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                    </span>
-                                    <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
+                                <a href="#register" className="primary-button text-center group cursor-pointer block font-syne text-sm uppercase tracking-wider">
+                                    <span className="relative z-10">Jetzt anmelden</span>
                                 </a>
-                                <a href="#about" className="btn-secondary group">
+                                <a href="#about" className="bg-black/40 backdrop-blur-md border border-white/20 rounded-full px-8 py-3 font-syne text-sm uppercase tracking-wider hover:bg-white/10 hover:border-white/40 transition-all cursor-pointer text-center">
                                     Mehr erfahren
                                 </a>
                             </motion.div>
 
-                            {/* Social Proof */}
-                            <motion.div variants={itemVariants} className="mt-8 flex items-center justify-center lg:justify-start gap-4">
-                                <div className="flex -space-x-3">
-                                    {[1, 2, 3, 4].map((i) => (
-                                        <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-gray-200 flex items-center justify-center overflow-hidden relative">
-                                            <Image
-                                                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i * 123}`}
-                                                alt="avatar"
-                                                fill
-                                                className="object-cover"
-                                            />
-                                        </div>
-                                    ))}
-                                    <div className="w-10 h-10 rounded-full border-2 border-white bg-[#F3E8FF] flex items-center justify-center text-xs font-bold text-[#7C3AED]">
-                                        +120
-                                    </div>
-                                </div>
-                                <div className="text-left">
-                                    <div className="flex gap-0.5">
-                                        {[1, 2, 3, 4, 5].map((i) => (
-                                            <svg key={i} className="w-4 h-4 text-[#F59E0B] fill-current" viewBox="0 0 20 20">
-                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                            </svg>
-                                        ))}
-                                    </div>
-                                    <p className="text-xs text-[#6B21A8] font-medium">Begeisterte Community</p>
-                                </div>
+                            {/* Social Proof Stats */}
+                            <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 text-zinc-500 font-syne text-xs uppercase tracking-wider">
+                                <span className="flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 bg-[#06b6d4] rounded-full shadow-[0_0_8px_#06b6d4]" />
+                                    Kostenlose Teilnahme
+                                </span>
+                                <span className="flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 bg-[#06b6d4] rounded-full shadow-[0_0_8px_#06b6d4]" />
+                                    Kölner Innenstadt
+                                </span>
+                                <span className="flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 bg-[#06b6d4] rounded-full shadow-[0_0_8px_#06b6d4]" />
+                                    Infos bei jedem Treffen per E-Mail
+                                </span>
                             </motion.div>
                         </motion.div>
 
-                        {/* Right Column: Visuals */}
+                        {/* Right: Visual */}
                         <motion.div
-                            initial={{ opacity: 0, x: 50 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.8, delay: 0.5 }}
-                            className="relative"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 1, delay: 0.3 }}
                         >
-                            <HeroVisual nextEvent={nextEvent} />
-
-                            {/* Mobile Only: Countdown */}
-                            {settings.showCountdown && nextEvent && (
-                                <div className="lg:hidden mt-8 text-center">
-                                    <p className="text-[#6B21A8] mb-4 font-medium">Nächstes Treffen in:</p>
-                                    <Countdown targetDate={new Date(nextEvent.date)} />
-                                </div>
-                            )}
+                            <HeroVisual />
                         </motion.div>
                     </div>
                 </div>
             </section>
 
-            {/* About Section */}
-            <section id="about" className="section bg-white">
-                <div className="container mx-auto px-6">
+            {/* ═══════════════════════════════════════════ */}
+            {/* ABOUT SECTION                              */}
+            {/* ═══════════════════════════════════════════ */}
+            <section id="about" className="py-24 relative">
+                <div className="container mx-auto px-6 max-w-7xl">
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="text-center mb-16"
+                        viewport={{ once: true, margin: "-80px" }}
+                        className="mb-16 max-w-3xl"
                     >
-                        <span className="badge badge-primary mb-4">Über uns</span>
-                        <h2 className="text-3xl md:text-4xl font-bold text-[#4C1D95] mb-4">
-                            Was ist der KI-Stammtisch?
-                        </h2>
-                        <p className="text-xl text-[#6B21A8] max-w-2xl mx-auto">
+                        <h2 className="text-xs font-syne text-[#06b6d4] uppercase tracking-[0.2em] mb-3">Über uns</h2>
+                        <h3 className="text-4xl md:text-5xl font-bold mb-5 text-white font-syne">Was ist der KI-Stammtisch?</h3>
+                        <p className="text-lg text-zinc-400 leading-relaxed font-manrope">
                             Ein ungezwungener Treffpunkt zum Austausch über Künstliche Intelligenz
-                            und ihre praktischen Anwendungen im Business.
+                            und ihre praktischen Anwendungen im Business. Echte Praxisberichte statt
+                            theoretischer Vorträge.
                         </p>
                     </motion.div>
 
-                    {/* Features Grid */}
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
+                    {/* Feature Cards */}
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 mb-20">
                         {features.map((feature, index) => (
                             <motion.div
                                 key={feature.title}
-                                className="card text-center"
+                                className="glass-card p-7 relative overflow-hidden group hover:shadow-[inset_0_0_20px_rgba(225,29,72,0.05),_0_0_20px_rgba(6,182,212,0.1)] transition-shadow duration-500"
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                                whileHover={{ y: -5 }}
+                                transition={{ delay: index * 0.08 }}
                             >
-                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#7C3AED] to-[#5B21B6] flex items-center justify-center mx-auto mb-5">
-                                    <feature.icon className="w-8 h-8 text-white" />
+                                {/* Ghost icon background */}
+                                <div className="absolute top-0 right-0 p-3 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity duration-500">
+                                    <feature.icon className="w-28 h-28 text-white" />
                                 </div>
-                                <h3 className="font-poppins font-bold text-xl text-[#4C1D95] mb-3">
-                                    {feature.title}
-                                </h3>
-                                <p className="text-[#6B21A8]">
-                                    {feature.description}
-                                </p>
+                                <div className="w-11 h-11 rounded-full border border-white/10 bg-white/5 flex items-center justify-center mb-5 group-hover:border-[#E11D48]/50 transition-colors relative z-10">
+                                    <feature.icon className="w-5 h-5 text-[#E11D48]" />
+                                </div>
+                                <h4 className="font-syne font-bold text-lg mb-2 text-white relative z-10">{feature.title}</h4>
+                                <p className="text-zinc-500 text-sm font-manrope relative z-10 leading-relaxed">{feature.description}</p>
                             </motion.div>
                         ))}
                     </div>
 
                     {/* Target Groups */}
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="bg-gradient-to-br from-[#FAF5FF] to-white rounded-3xl p-8 md:p-12"
+                        className="glass-panel rounded-2xl p-8 md:p-10"
                     >
-                        <h3 className="text-2xl md:text-3xl font-bold text-[#4C1D95] mb-8 text-center">
+                        <h3 className="text-2xl font-syne font-bold text-white mb-8 text-center">
                             Für wen ist der Stammtisch?
                         </h3>
-                        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
                             {targetGroups.map((group, index) => (
                                 <motion.div
                                     key={group.title}
-                                    className="flex items-start gap-4 p-4 bg-white rounded-xl shadow-sm"
-                                    initial={{ opacity: 0, x: -20 }}
+                                    className="flex items-start gap-4 p-4 bg-white/[0.03] rounded-xl border border-white/5 hover:border-[#06b6d4]/30 transition-colors"
+                                    initial={{ opacity: 0, x: -15 }}
                                     whileInView={{ opacity: 1, x: 0 }}
                                     viewport={{ once: true }}
-                                    transition={{ delay: index * 0.1 }}
+                                    transition={{ delay: index * 0.08 }}
                                 >
-                                    <div className="w-12 h-12 rounded-xl bg-[#7C3AED]/10 flex items-center justify-center flex-shrink-0">
-                                        <group.icon className="w-6 h-6 text-[#7C3AED]" />
+                                    <div className="w-10 h-10 rounded-lg bg-[#06b6d4]/10 flex items-center justify-center flex-shrink-0">
+                                        <group.icon className="w-5 h-5 text-[#06b6d4]" />
                                     </div>
                                     <div>
-                                        <h4 className="font-poppins font-bold text-[#4C1D95] mb-1">
-                                            {group.title}
-                                        </h4>
-                                        <p className="text-sm text-[#6B21A8]">
-                                            {group.description}
-                                        </p>
+                                        <h4 className="font-syne font-bold text-white mb-1">{group.title}</h4>
+                                        <p className="text-sm text-zinc-500 font-manrope">{group.description}</p>
                                     </div>
                                 </motion.div>
                             ))}
@@ -311,27 +248,68 @@ export function LandingPage({ settings, nextEvent, pastEvents, blogPosts }: Land
                 </div>
             </section>
 
-            {/* Next Event Section */}
-            <section id="events" className="section">
-                <div className="container mx-auto px-6">
-                    <div className="text-center mb-12">
-                        <span className="badge badge-success mb-4">Events</span>
-                        <h2 className="text-3xl md:text-4xl font-bold text-[#4C1D95] mb-4">
-                            Nächstes Treffen
-                        </h2>
-                    </div>
+            {/* ═══════════════════════════════════════════ */}
+            {/* REGISTRATION SECTION                       */}
+            {/* ═══════════════════════════════════════════ */}
+            <div className="h-px w-full bg-gradient-to-r from-transparent via-[#E11D48]/20 to-transparent" />
+            <section id="register" className="py-24 relative overflow-hidden bg-[#E11D48]/[0.02]">
+                <div className="container mx-auto px-6 max-w-5xl relative z-10">
+                    <div className="grid lg:grid-cols-2 gap-14 items-center">
+                        <motion.div
+                            initial={{ opacity: 0, x: -40 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                        >
+                            <h2 className="text-4xl md:text-5xl font-syne font-bold mb-5 text-glow text-white">
+                                Dabei sein!
+                            </h2>
+                            <p className="text-zinc-400 mb-8 font-manrope text-lg leading-relaxed">
+                                Registrieren Sie sich kostenlos und erhalten Sie Einladungen zu unseren monatlichen Treffen, exklusive Insider-Tipps und ungefilterte KI-News.
+                            </p>
+                            <div className="space-y-4 font-syne text-sm">
+                                {['Einladungen zu jedem Stammtisch', 'Lokales Networking mit KI-Profis', 'Kein Spam – nur relevante Updates'].map((item) => (
+                                    <div key={item} className="flex items-center gap-4 text-zinc-400">
+                                        <div className="w-1.5 h-1.5 bg-[#E11D48] rounded-full shadow-[0_0_8px_#E11D48]" />
+                                        <span>{item}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </motion.div>
 
-                    <div className="max-w-3xl mx-auto">
-                        <NextEventDisplay event={nextEvent} showCountdown={settings.showCountdown} />
+                        <motion.div
+                            initial={{ opacity: 0, y: 40 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="glass-panel rounded-2xl p-8 lg:p-10 border-[#E11D48]/10"
+                        >
+                            <h3 className="font-syne font-bold text-xl mb-6 text-white">Anmeldung</h3>
+                            <RegistrationForm />
+                        </motion.div>
                     </div>
+                </div>
+            </section>
+            <div className="h-px w-full bg-gradient-to-r from-transparent via-[#06b6d4]/20 to-transparent" />
 
-                    {/* Past Events */}
+            {/* ═══════════════════════════════════════════ */}
+            {/* EVENTS SECTION                             */}
+            {/* ═══════════════════════════════════════════ */}
+            <section id="events" className="py-24 relative">
+                <div className="container mx-auto px-6 max-w-5xl">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="text-center mb-10"
+                    >
+                        <h2 className="text-xs font-syne text-[#06b6d4] uppercase tracking-[0.2em] mb-3">Veranstaltungen</h2>
+                        <h3 className="font-syne text-3xl md:text-4xl font-bold text-white">Nächstes Treffen</h3>
+                    </motion.div>
+                    <NextEventDisplay event={nextEvent} showCountdown={settings.showCountdown} />
+
                     {settings.showEventArchive && pastEvents.length > 0 && (
                         <div className="mt-16">
-                            <h3 className="text-2xl font-bold text-[#4C1D95] mb-8 text-center">
-                                Vergangene Treffen
-                            </h3>
-                            <div className="space-y-6 max-w-3xl mx-auto">
+                            <h3 className="font-syne text-xl text-zinc-500 mb-6 border-b border-white/5 pb-3">Vergangene Treffen</h3>
+                            <div className="space-y-4">
                                 {pastEvents.map((event: typeof nextEvent) => (
                                     <EventCard key={event._id} event={event} isPast />
                                 ))}
@@ -341,94 +319,30 @@ export function LandingPage({ settings, nextEvent, pastEvents, blogPosts }: Land
                 </div>
             </section>
 
-            {/* Blog Preview Section */}
+            {/* ═══════════════════════════════════════════ */}
+            {/* BLOG SECTION                               */}
+            {/* ═══════════════════════════════════════════ */}
             {blogPosts.length > 0 && (
-                <section className="section bg-white">
-                    <div className="container mx-auto px-6">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
-                            <div>
-                                <span className="badge badge-primary mb-4">Blog</span>
-                                <h2 className="text-3xl md:text-4xl font-bold text-[#4C1D95]">
-                                    Aktuelle Beiträge
-                                </h2>
+                <>
+                    <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                    <section className="py-24 relative">
+                        <div className="container mx-auto px-6 max-w-5xl">
+                            <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12">
+                                <div>
+                                    <h2 className="text-xs font-syne text-[#06b6d4] uppercase tracking-[0.2em] mb-3">Aktuelles</h2>
+                                    <h3 className="text-3xl md:text-4xl font-syne font-bold text-white">Neueste Beiträge</h3>
+                                </div>
+                                <Link href="/blog" className="bg-black/40 backdrop-blur-md border border-white/10 rounded-full px-5 py-2 font-medium tracking-wide hover:border-[#06b6d4] hover:text-[#06b6d4] transition-all text-sm mt-6 md:mt-0 font-syne text-center">
+                                    Alle Beiträge
+                                </Link>
                             </div>
-                            <Link href="/blog" className="btn-secondary mt-4 md:mt-0">
-                                Alle Beiträge
-                                <ArrowRight className="w-4 h-4 ml-2" />
-                            </Link>
+                            <BlogList posts={blogPosts} />
                         </div>
-
-                        <BlogList posts={blogPosts} />
-                    </div>
-                </section>
+                    </section>
+                </>
             )}
 
-            {/* Registration Section */}
-            <section id="register" className="section bg-gradient-to-br from-[#7C3AED] to-[#5B21B6]">
-                <div className="container mx-auto px-6">
-                    <div className="max-w-4xl mx-auto">
-                        <div className="grid lg:grid-cols-2 gap-12 items-center">
-                            {/* Left Content */}
-                            <motion.div
-                                initial={{ opacity: 0, x: -50 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
-                                className="text-white"
-                            >
-                                <span className="inline-block px-4 py-2 bg-white/20 rounded-full text-sm font-medium mb-6">
-                                    Kostenlos & Unverbindlich
-                                </span>
-                                <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                                    Jetzt anmelden und dabei sein!
-                                </h2>
-                                <p className="text-xl text-white/90 mb-8">
-                                    Registrieren Sie sich mit Ihrer Firmen-E-Mail-Adresse und erhalten Sie
-                                    rechtzeitig alle Informationen zum nächsten KI-Stammtisch.
-                                </p>
-                                <ul className="space-y-4">
-                                    {[
-                                        'Einladung zum nächsten Stammtisch',
-                                        'Informationen zu Ort und Datum',
-                                        'Optionaler Newsletter mit KI-News',
-                                    ].map((item, i) => (
-                                        <motion.li
-                                            key={item}
-                                            initial={{ opacity: 0, x: -20 }}
-                                            whileInView={{ opacity: 1, x: 0 }}
-                                            viewport={{ once: true }}
-                                            transition={{ delay: 0.2 + (i * 0.1) }}
-                                            className="flex items-center gap-3 text-white/90"
-                                        >
-                                            <div className="w-6 h-6 rounded-full bg-[#22C55E] flex items-center justify-center flex-shrink-0">
-                                                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                </svg>
-                                            </div>
-                                            {item}
-                                        </motion.li>
-                                    ))}
-                                </ul>
-                            </motion.div>
-
-                            {/* Registration Form */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 50 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: 0.3 }}
-                                className="card bg-white shadow-2xl"
-                            >
-                                <h3 className="font-poppins font-bold text-2xl text-[#4C1D95] mb-6 text-center">
-                                    Anmeldung
-                                </h3>
-                                <RegistrationForm />
-                            </motion.div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
             <Footer />
-        </>
+        </div>
     );
 }

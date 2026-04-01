@@ -44,34 +44,26 @@ export function Countdown({ targetDate }: CountdownProps) {
         return () => clearInterval(timer);
     }, [targetDate]);
 
-    if (!isClient) {
-        return (
-            <div className="flex gap-3 md:gap-4 justify-center">
-                {['Tage', 'Std', 'Min', 'Sek'].map((label) => (
-                    <div key={label} className="countdown-box">
-                        <div className="countdown-number">--</div>
-                        <div className="countdown-label">{label}</div>
-                    </div>
-                ))}
-            </div>
-        );
-    }
-
     const boxes = [
-        { value: timeLeft.days, label: 'Tage' },
-        { value: timeLeft.hours, label: 'Std' },
-        { value: timeLeft.minutes, label: 'Min' },
-        { value: timeLeft.seconds, label: 'Sek' },
+        { value: isClient ? timeLeft.days : 0, label: 'Tage' },
+        { value: isClient ? timeLeft.hours : 0, label: 'Std' },
+        { value: isClient ? timeLeft.minutes : 0, label: 'Min' },
+        { value: isClient ? timeLeft.seconds : 0, label: 'Sek' },
     ];
 
     return (
-        <div className="flex gap-3 md:gap-4 justify-center">
+        <div className="flex gap-3 justify-center lg:justify-start">
             {boxes.map(({ value, label }) => (
-                <div key={label} className="countdown-box animate-pulse-glow">
-                    <div className="countdown-number">
-                        {value.toString().padStart(2, '0')}
+                <div
+                    key={label}
+                    className="bg-[#18181b]/60 backdrop-blur-md border border-white/5 rounded-xl px-4 py-3 min-w-[70px] text-center hover:border-[#E11D48]/20 transition-colors"
+                >
+                    <div className="font-syne font-bold text-2xl text-white leading-none mb-1">
+                        {isClient ? value.toString().padStart(2, '0') : '--'}
                     </div>
-                    <div className="countdown-label">{label}</div>
+                    <div className="text-[10px] text-zinc-600 font-syne uppercase tracking-wider">
+                        {label}
+                    </div>
                 </div>
             ))}
         </div>

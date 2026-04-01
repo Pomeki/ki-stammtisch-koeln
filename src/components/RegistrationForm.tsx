@@ -36,17 +36,24 @@ export function RegistrationForm() {
         setMessage('');
 
         try {
-            const response = await fetch('/api/members', {
+            // 👇 HIER DEINE n8n WEBHOOK URL EINTRAGEN
+            // (Am besten legst du in n8n einen neuen Webhook-Node an)
+            const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || 'https://deine-n8n-domain.com/webhook/stammtisch';
+
+            const response = await fetch(webhookUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({
+                    ...formData,
+                    eventSource: 'KI-Stammtisch Website',
+                    timestamp: new Date().toISOString()
+                }),
             });
 
-            const data = await response.json();
-
-            if (data.success) {
+            // n8n Webhooks geben bei Erfolg standardmäßig Status 200 zurück
+            if (response.ok) {
                 setStatus('success');
-                setMessage(data.message || 'Erfolgreich registriert!');
+                setMessage('Erfolgreich registriert! Mails folgen via n8n.');
                 setFormData({
                     name: '',
                     email: '',
@@ -56,11 +63,11 @@ export function RegistrationForm() {
                 });
             } else {
                 setStatus('error');
-                setMessage(data.error || 'Ein Fehler ist aufgetreten.');
+                setMessage('Ein Fehler ist aufgetreten. Bitte später nochmal versuchen.');
             }
         } catch {
             setStatus('error');
-            setMessage('Verbindungsfehler. Bitte versuchen Sie es später erneut.');
+            setMessage('Verbindungsfehler zu n8n. Bitte überprüfen Sie die Webhook-URL.');
         }
     };
 
@@ -81,8 +88,8 @@ export function RegistrationForm() {
         <form onSubmit={handleSubmit} className="space-y-5">
             {/* Name Field */}
             <div>
-                <label htmlFor="name" className="form-label flex items-center gap-2">
-                    <User className="w-4 h-4 text-[#7C3AED]" />
+                <label htmlFor="name" className="block text-zinc-400 font-syne text-xs uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <User className="w-3.5 h-3.5 text-[#E11D48]" />
                     Name *
                 </label>
                 <input
@@ -93,14 +100,14 @@ export function RegistrationForm() {
                     onChange={handleChange}
                     required
                     placeholder="Max Mustermann"
-                    className="form-input"
+                    className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#E11D48] focus:ring-1 focus:ring-[#E11D48] transition-all font-manrope text-sm placeholder:text-zinc-700"
                 />
             </div>
 
             {/* Email Field */}
             <div>
-                <label htmlFor="email" className="form-label flex items-center gap-2">
-                    <Mail className="w-4 h-4 text-[#7C3AED]" />
+                <label htmlFor="email" className="block text-zinc-400 font-syne text-xs uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <Mail className="w-3.5 h-3.5 text-[#E11D48]" />
                     Firmen-E-Mail *
                 </label>
                 <input
@@ -111,17 +118,17 @@ export function RegistrationForm() {
                     onChange={handleChange}
                     required
                     placeholder="max.mustermann@firma.de"
-                    className="form-input"
+                    className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#E11D48] focus:ring-1 focus:ring-[#E11D48] transition-all font-manrope text-sm placeholder:text-zinc-700"
                 />
-                <p className="text-sm text-[#6B21A8] mt-1">
+                <p className="text-[10px] text-zinc-600 mt-1.5 font-manrope">
                     Bitte verwenden Sie Ihre geschäftliche E-Mail-Adresse
                 </p>
             </div>
 
             {/* Company Field */}
             <div>
-                <label htmlFor="company" className="form-label flex items-center gap-2">
-                    <Building2 className="w-4 h-4 text-[#7C3AED]" />
+                <label htmlFor="company" className="block text-zinc-400 font-syne text-xs uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <Building2 className="w-3.5 h-3.5 text-[#E11D48]" />
                     Firma *
                 </label>
                 <input
@@ -132,14 +139,14 @@ export function RegistrationForm() {
                     onChange={handleChange}
                     required
                     placeholder="Musterfirma GmbH"
-                    className="form-input"
+                    className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#E11D48] focus:ring-1 focus:ring-[#E11D48] transition-all font-manrope text-sm placeholder:text-zinc-700"
                 />
             </div>
 
             {/* Industry Field */}
             <div>
-                <label htmlFor="industry" className="form-label flex items-center gap-2">
-                    <Briefcase className="w-4 h-4 text-[#7C3AED]" />
+                <label htmlFor="industry" className="block text-zinc-400 font-syne text-xs uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <Briefcase className="w-3.5 h-3.5 text-[#E11D48]" />
                     Branche
                 </label>
                 <select
@@ -147,7 +154,7 @@ export function RegistrationForm() {
                     name="industry"
                     value={formData.industry}
                     onChange={handleChange}
-                    className="form-input cursor-pointer"
+                    className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#E11D48] focus:ring-1 focus:ring-[#E11D48] transition-all font-manrope text-sm cursor-pointer"
                 >
                     <option value="">Bitte wählen...</option>
                     {industries.map((industry) => (
@@ -167,11 +174,11 @@ export function RegistrationForm() {
                     checked={formData.acceptPrivacy}
                     onChange={handleChange}
                     required
-                    className="mt-1 w-5 h-5 rounded border-2 border-[#7C3AED]/30 text-[#7C3AED] focus:ring-[#7C3AED] cursor-pointer"
+                    className="mt-1 w-4 h-4 rounded border-2 border-white/20 bg-black/40 text-[#E11D48] focus:ring-[#E11D48] cursor-pointer accent-[#E11D48]"
                 />
-                <label htmlFor="acceptPrivacy" className="text-sm text-[#6B21A8] cursor-pointer">
+                <label htmlFor="acceptPrivacy" className="text-xs text-zinc-500 cursor-pointer font-manrope leading-relaxed">
                     Ich habe die{' '}
-                    <a href="/datenschutz" className="text-[#7C3AED] underline hover:no-underline">
+                    <a href="/datenschutz" className="text-[#06b6d4] underline hover:no-underline">
                         Datenschutzerklärung
                     </a>{' '}
                     gelesen und akzeptiere diese. *
@@ -180,14 +187,14 @@ export function RegistrationForm() {
 
             {/* Status Messages */}
             {status === 'success' && (
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-green-50 border border-green-200 text-green-700">
+                <div className="flex items-center gap-3 p-4 rounded-xl bg-[#06b6d4]/10 border border-[#06b6d4]/20 text-[#06b6d4] text-sm font-manrope">
                     <Check className="w-5 h-5" />
                     <span>{message}</span>
                 </div>
             )}
 
             {status === 'error' && (
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700">
+                <div className="flex items-center gap-3 p-4 rounded-xl bg-[#E11D48]/10 border border-[#E11D48]/20 text-[#E11D48] text-sm font-manrope">
                     <AlertCircle className="w-5 h-5" />
                     <span>{message}</span>
                 </div>
@@ -197,22 +204,22 @@ export function RegistrationForm() {
             <button
                 type="submit"
                 disabled={status === 'loading'}
-                className="btn-cta w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-[#E11D48] text-white py-3.5 rounded-xl font-syne font-bold text-sm uppercase tracking-wider hover:bg-[#be123c] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
             >
                 {status === 'loading' ? (
                     <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <Loader2 className="w-4 h-4 animate-spin" />
                         Wird gesendet...
                     </>
                 ) : (
                     <>
-                        <Check className="w-5 h-5" />
+                        <Check className="w-4 h-4" />
                         Kostenlos anmelden
                     </>
                 )}
             </button>
 
-            <p className="text-center text-sm text-[#6B21A8]">
+            <p className="text-center text-[10px] text-zinc-600 font-manrope">
                 * Pflichtfelder
             </p>
         </form>
