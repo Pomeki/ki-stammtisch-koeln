@@ -56,12 +56,12 @@ export function Countdown({ targetDate }: CountdownProps) {
             {boxes.map(({ value, label }) => (
                 <div
                     key={label}
-                    className="bg-[#18181b]/60 backdrop-blur-md border border-white/5 rounded-xl px-4 py-3 min-w-[70px] text-center hover:border-[#E11D48]/20 transition-colors"
+                    className="bg-[var(--bg-card)] backdrop-blur-md border border-[var(--border-subtle)] rounded-xl px-4 py-3 min-w-[70px] text-center hover:border-[#E11D48]/20 transition-colors"
                 >
-                    <div className="font-syne font-bold text-2xl text-white leading-none mb-1">
+                    <div className="font-syne font-bold text-2xl text-[var(--text-heading)] leading-none mb-1">
                         {isClient ? value.toString().padStart(2, '0') : '--'}
                     </div>
-                    <div className="text-[10px] text-zinc-600 font-syne uppercase tracking-wider">
+                    <div className="text-[10px] text-[var(--text-faint)] font-syne uppercase tracking-wider">
                         {label}
                     </div>
                 </div>

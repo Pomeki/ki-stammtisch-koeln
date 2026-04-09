@@ -1,10 +1,12 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
 import { BrainCircuit, Cpu, Network, Sparkles, Database, Bot } from 'lucide-react';
 
 export function HeroVisual() {
+    const shouldReduceMotion = useReducedMotion();
+    
     const floatingNodes = [
         { Icon: BrainCircuit, top: '20%', left: '20%', delay: 0, yOffset: -30, xOffset: 20 },
         { Icon: Cpu, top: '25%', left: '75%', delay: 1, yOffset: 40, xOffset: -30 },
@@ -20,37 +22,35 @@ export function HeroVisual() {
             <div className="absolute inset-0 flex items-center justify-center">
                 {/* Outer Ring */}
                 <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+                    animate={shouldReduceMotion ? { rotate: 0 } : { rotate: 360 }}
+                    transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
                     className="absolute w-[500px] h-[500px] rounded-full border border-dashed border-[#E11D48]/30 opacity-50"
                 />
                 
                 {/* Middle Ring */}
                 <motion.div
-                    animate={{ rotate: -360 }}
-                    transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+                    animate={shouldReduceMotion ? { rotate: 0 } : { rotate: -360 }}
+                    transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
                     className="absolute w-[350px] h-[350px] rounded-full border border-[#06b6d4]/20 border-t-[#06b6d4] opacity-70"
                 />
                 
                 {/* Inner Glowing Core */}
                 <motion.div
-                    animate={{ scale: [1, 1.1, 1], opacity: [0.5, 1, 0.5] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    animate={shouldReduceMotion ? { scale: 1, opacity: 0.75 } : { scale: [1, 1.05, 1], opacity: [0.6, 0.9, 0.6] }}
+                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                     className="absolute w-[200px] h-[200px] bg-[#E11D48] rounded-full blur-[70px]"
                 />
                 <motion.div
-                    animate={{ scale: [1, 1.2, 1], opacity: [0.8, 0.4, 0.8] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                    animate={shouldReduceMotion ? { scale: 1, opacity: 0.6 } : { scale: [1, 1.1, 1], opacity: [0.8, 0.5, 0.8] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
                     className="absolute w-[150px] h-[150px] bg-[#06b6d4] rounded-full blur-[50px] mix-blend-screen"
                 />
 
-                {/* Skyline Silhouette */}
                 <div className="absolute z-10 w-[280px] h-[140px] flex items-center justify-center">
-                    {/* Pulsing light effect on the skyline itself to match the glow */}
                     <motion.div 
                         className="relative w-full h-full"
-                        animate={{ opacity: [0.8, 1, 0.8] }}
-                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                        animate={shouldReduceMotion ? { opacity: 1 } : { opacity: [0.9, 1, 0.9] }}
+                        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                     >
                         <Image 
                             src="/koeln-skyline.png"
@@ -68,19 +68,19 @@ export function HeroVisual() {
                     <motion.div
                         key={i}
                         initial={{ y: 0, x: 0 }}
-                        animate={{
-                            y: [0, node.yOffset, 0],
-                            x: [0, node.xOffset, 0],
-                            scale: [1, 1.1, 1]
+                        animate={shouldReduceMotion ? { y: 0, x: 0, scale: 1 } : {
+                            y: [0, node.yOffset * 0.5, 0],
+                            x: [0, node.xOffset * 0.5, 0],
+                            scale: [1, 1.05, 1]
                         }}
-                        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: node.delay }}
-                        className="absolute w-14 h-14 bg-[#18181b]/60 backdrop-blur-xl rounded-xl flex items-center justify-center border border-white/10 shadow-[0_0_20px_rgba(0,0,0,0.5)] z-20 group"
+                        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: node.delay }}
+                        className="absolute w-14 h-14 bg-[var(--bg-card)] backdrop-blur-xl rounded-xl flex items-center justify-center border border-[var(--border-subtle)] shadow-[0_0_20px_rgba(0,0,0,0.3)] z-20 group"
                         style={{
                             top: node.top,
                             left: node.left,
                         }}
                     >
-                        <node.Icon className={`w-6 h-6 ${i % 2 === 0 ? 'text-[#E11D48] drop-shadow-[0_0_8px_rgba(225,29,72,0.8)]' : 'text-[#06b6d4] drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]'}`} />
+                        <node.Icon className={`w-6 h-6 ${i % 2 === 0 ? 'text-[var(--color-red)] drop-shadow-[0_0_8px_rgba(225,29,72,0.8)]' : 'text-[var(--color-cyan)] drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]'}`} />
                     </motion.div>
                 ))}
             </div>

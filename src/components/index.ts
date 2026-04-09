@@ -6,3 +6,7 @@ export * from './BlogCard';
 export * from './EventCard';
 export * from './HeroVisual';
 export * from './LandingPage';
+export * from './SocialProof';
+export * from './StickyCTA';
+export * from './ThemeProvider';
+export * from './ThemeToggle';

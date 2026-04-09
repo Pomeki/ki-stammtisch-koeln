@@ -34,22 +34,22 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                     <div className="max-w-4xl mx-auto text-center mb-12">
                         <Link
                             href="/"
-                            className="inline-flex items-center gap-2 text-[#7C3AED] hover:text-[#5B21B6] mb-6 cursor-pointer"
+                            className="inline-flex items-center gap-2 text-[var(--color-cyan)] hover:text-[var(--color-red)] mb-6 cursor-pointer transition-colors"
                         >
                             <ArrowLeft className="w-4 h-4" />
                             Zurück zur Startseite
                         </Link>
 
                         <div className="flex items-center justify-center gap-3 mb-4">
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#7C3AED] to-[#5B21B6] flex items-center justify-center">
+                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#E11D48] to-[#be123c] flex items-center justify-center">
                                 <BookOpen className="w-6 h-6 text-white" />
                             </div>
                         </div>
 
-                        <h1 className="text-4xl md:text-5xl font-bold text-[#4C1D95] mb-4">
+                        <h1 className="text-4xl md:text-5xl font-bold mb-4">
                             Blog
                         </h1>
-                        <p className="text-xl text-[#6B21A8]">
+                        <p className="text-xl text-[var(--text-body)]">
                             Neuigkeiten, Einblicke und Wissen rund um Künstliche Intelligenz
                         </p>
                     </div>
@@ -58,7 +58,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                     <div className="flex flex-wrap justify-center gap-3 mb-12">
                         <Link
                             href="/blog"
-                            className={`badge cursor-pointer transition-colors ${!category ? 'bg-[#7C3AED] text-white' : 'badge-primary hover:bg-[#7C3AED]/20'
+                            className={`badge cursor-pointer transition-colors ${!category ? 'bg-[#E11D48] text-white' : 'badge-primary hover:bg-[#E11D48]/20'
                                 }`}
                         >
                             Alle
@@ -67,7 +67,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                             <Link
                                 key={key}
                                 href={`/blog?category=${key}`}
-                                className={`badge cursor-pointer transition-colors ${category === key ? 'bg-[#7C3AED] text-white' : 'badge-primary hover:bg-[#7C3AED]/20'
+                                className={`badge cursor-pointer transition-colors ${category === key ? 'bg-[#E11D48] text-white' : 'badge-primary hover:bg-[#E11D48]/20'
                                     }`}
                             >
                                 {label}
